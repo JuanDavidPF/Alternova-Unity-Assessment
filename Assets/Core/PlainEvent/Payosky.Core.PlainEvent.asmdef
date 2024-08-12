@@ -1,0 +1,16 @@
+{
+    "name": "Payosky.Core.PlainEvent",
+    "rootNamespace": "Payosky.Core.PlainEvent",
+    "references": [
+        "GUID:4990cd8cc6b0e93429c217d331d682f0"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
