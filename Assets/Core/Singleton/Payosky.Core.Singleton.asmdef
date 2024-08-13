@@ -1,0 +1,14 @@
+{
+    "name": "Payosky.Core.Singleton",
+    "rootNamespace": "Payosky.Core.Singleton",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
