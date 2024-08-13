@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using Alternova.Runtime.Events;
 using Alternova.Runtime.Tiles;
 using Payosky.Core.PlainEvent;
@@ -13,6 +15,11 @@ namespace Alternova.Runtime
         [SerializeField] private BoardManager board;
         [SerializeField] private BoardData boardData;
 
+        private void Start()
+        {
+            LeaderboardManager.Instance.LoadLeaderboard();
+        }//Closes Start method
+
         public void StartBoard()
         {
             PlayerState.Instance.Reset();
@@ -25,13 +32,39 @@ namespace Alternova.Runtime
             }
 
         }//Closes StartBoard method
+        public void SaveGameSession()
+        {
+            GameSessionStatsWrapper result = new(
+              new(PlayerState.Instance.TotalClicks,
+                    GameState.Instance.time,
+                    PlayerState.Instance.Pairs,
+                    PlayerState.Instance.Score
+            )
+            );
+
+
+            string jsonResult = JsonUtility.ToJson(result, true);
+            string dateTime = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+
+            string filePath = Path.Combine(Application.persistentDataPath, $"GameSession_{dateTime}.json");
+            File.WriteAllText(filePath, jsonResult);
+
+        }//Closes StartBoard method
+
+        public void SaveToLeaderboard()
+        {
+            LeaderboardManager.Instance.SaveScore(PlayerState.Instance.Username, PlayerState.Instance.Score);
+
+        }//Closes SaveToLeaderboard method
 
 
         public void OnGameOverEvent(GameOverEvent e)
         {
             PlainEventManager.RemoveEventListener<GameOverEvent>(OnGameOverEvent);
             GameState.Instance.StopClock();
-        }
+            SaveGameSession();
+            SaveToLeaderboard();
+        }//Closes OnGameOverEvent method
 
         private void Update()
         {
@@ -42,7 +75,8 @@ namespace Alternova.Runtime
         private void OnDestroy()
         {
             PlainEventManager.RemoveAllEvents();
-        }
+        }//Closes OnDestroy method
+
 
     }//Closes GameInstance class
 }//Closes Namespace declaration

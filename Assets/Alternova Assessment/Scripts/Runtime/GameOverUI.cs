@@ -34,12 +34,6 @@ namespace Alternova.Runtime
         {
             Turn(true);
 
-            Debug.Log(PlayerState.Instance.Username);
-            Debug.Log(GameState.Instance.GetTime());
-            Debug.Log(PlayerState.Instance.Pairs);
-            Debug.Log(PlayerState.Instance.Score);
-            Debug.Log(PlayerState.Instance.TotalClicks);
-
         }//Closes OnGameOver Method
 
     }//Closes GameOverUI class

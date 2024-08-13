@@ -18,7 +18,7 @@ namespace Alternova.Runtime.Tiles
         [SerializeField] private Tile tilePrefab;
         [SerializeField] private GridLayoutGroup grildLayout;
         [SerializeField] private Image progress;
-
+        [SerializeField] private GameObject invalidDataMessage;
 
         private BoardData data;
         private List<Tile> tiles = new();
@@ -110,7 +110,12 @@ namespace Alternova.Runtime.Tiles
 
             TileData[] dataArray = data.LoadData();
 
-            if (!data.IsDataValid(dataArray)) return;
+            if (!data.IsDataValid(dataArray))
+            {
+                if (invalidDataMessage) invalidDataMessage.SetActive(true);
+                return;
+            }
+            if (invalidDataMessage) invalidDataMessage.SetActive(false);
 
             dataArray = OrganizeTiles(dataArray);
 

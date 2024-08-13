@@ -35,10 +35,8 @@ namespace Alternova.Runtime
             if (isRunning) elapsedTime += Time.deltaTime;
 
         }//Closes UpdateClock method
-        public float GetTime()
-        {
-            return Mathf.Round(elapsedTime * 100f) / 100f;
-        }//Closes GetTime method
+        public int time => (int)elapsedTime;
+
         public string GetFormattedTime()
         {
             int minutes = Mathf.FloorToInt(elapsedTime / 60);
