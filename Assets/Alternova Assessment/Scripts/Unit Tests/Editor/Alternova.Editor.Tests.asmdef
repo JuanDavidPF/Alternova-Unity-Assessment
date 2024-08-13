@@ -1,6 +1,6 @@
 {
-    "name": "Alternova.Runtime.Tests",
-    "rootNamespace": "Alternova.Runtime.Tests",
+    "name": "Alternova.Editor.Tests",
+    "rootNamespace": "Alternova.Editor.Tests",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",

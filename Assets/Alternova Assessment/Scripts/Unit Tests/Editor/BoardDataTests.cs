@@ -1,9 +1,8 @@
 using NUnit.Framework;
 using UnityEngine;
-using Alternova.Runtime;
 using Alternova.Runtime.Tiles;
 
-namespace Alternova.Tests
+namespace Alternova.Editor.Tests
 {
     public class BoardDataTests
     {
