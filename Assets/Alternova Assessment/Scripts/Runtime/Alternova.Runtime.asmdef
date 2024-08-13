@@ -3,7 +3,8 @@
     "rootNamespace": "Alternova.Runtime",
     "references": [
         "GUID:c237f0d8db39cd3409e299d33351834e",
-        "GUID:4990cd8cc6b0e93429c217d331d682f0"
+        "GUID:4990cd8cc6b0e93429c217d331d682f0",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
