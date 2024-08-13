@@ -50,18 +50,18 @@ namespace Alternova.Runtime.Tiles
 
             if (AreTilesGrouped(tilesRevealed.ToArray()))
             {
-                if (data.GroupSize == tilesRevealed.Count)
+                if (data.groupSize == tilesRevealed.Count)
                 {
                     tilesRevealed.Clear();
                     PlainEventManager.TriggerEvent(new ClearGroupedTiles());
                     PlayerState.Instance.AddPair();
-                    PlayerState.Instance.AddScore(data.PairScore);
+                    PlayerState.Instance.AddScore(data.pairScore);
                 }
             }
             else
             {
                 tilesRevealed.Clear();
-                PlayerState.Instance.AddScore(data.WrongPairScore);
+                PlayerState.Instance.AddScore(data.wrongPairScore);
                 PlainEventManager.TriggerEvent(new CoverRevealedTilesEvent());
             }
 
@@ -157,7 +157,7 @@ namespace Alternova.Runtime.Tiles
         public IEnumerator CO_RevealCards()
         {
             yield return new WaitForEndOfFrame();
-            yield return CO_RevealCards(data.InitialRevealDuration);
+            yield return CO_RevealCards(data.initialRevealDuration);
         }//Closes InitializeBoard Coroutine
 
 
