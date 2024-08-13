@@ -1,9 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
+using Alternova.Runtime.Leaderboards;
 using TMPro;
 using UnityEngine;
 
-namespace Alternova.Runtime
+namespace Alternova.Runtime.Widegets
 {
     public class LeaderboardUI : MonoBehaviour
     {

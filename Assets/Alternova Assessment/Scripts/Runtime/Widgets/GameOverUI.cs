@@ -3,7 +3,7 @@ using Alternova.Runtime.Events;
 using Payosky.Core.PlainEvent;
 using UnityEngine;
 
-namespace Alternova.Runtime
+namespace Alternova.Runtime.Widegets
 {
     [RequireComponent(typeof(CanvasGroup))]
     public class GameOverUI : MonoBehaviour

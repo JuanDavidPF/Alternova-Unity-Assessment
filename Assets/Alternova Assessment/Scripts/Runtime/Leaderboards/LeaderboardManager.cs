@@ -2,7 +2,7 @@ using UnityEngine;
 using System.IO;
 using Payosky.Core.Singleton;
 
-namespace Alternova.Runtime
+namespace Alternova.Runtime.Leaderboards
 {
 
     public class LeaderboardManager : PlainSingleton<LeaderboardManager>

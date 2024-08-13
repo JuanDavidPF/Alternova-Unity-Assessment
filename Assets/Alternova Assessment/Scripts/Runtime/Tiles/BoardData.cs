@@ -3,7 +3,7 @@ using Alternova.Runtime.Tiles;
 using UnityEngine;
 
 
-namespace Alternova.Runtime
+namespace Alternova.Runtime.Tiles
 {
     [CreateAssetMenu(fileName = "new Board Data", menuName = "ScriptableObjects/Board Data", order = 1)]
 

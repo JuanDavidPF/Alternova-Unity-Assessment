@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-namespace Alternova.Runtime
+namespace Alternova.Runtime.Widegets
 {
     [RequireComponent(typeof(TextMeshProUGUI))]
     public class ClockUI : MonoBehaviour

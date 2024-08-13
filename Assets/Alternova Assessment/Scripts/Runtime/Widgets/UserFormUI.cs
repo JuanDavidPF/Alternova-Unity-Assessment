@@ -4,9 +4,9 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace Alternova.Runtime
+namespace Alternova.Runtime.Widgets
 {
-    public class UserForm : MonoBehaviour
+    public class UserFormUI : MonoBehaviour
     {
         private string playerInitials = "";
         [SerializeField] private Button playButton;
