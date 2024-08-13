@@ -3,9 +3,9 @@ using Payosky.Core.PlainEvent;
 
 namespace Alternova.Runtime.Events
 {
-    public class ClearBoardEvent : PlainEvent
+    public class EmptyBoardEvent : PlainEvent
     {
-        public ClearBoardEvent() { }
+        public EmptyBoardEvent() { }
 
-    }//Closes CardFlippedEvent event
+    }//Closes EmptyBoardEvent event
 }//Closes Namespace declaration

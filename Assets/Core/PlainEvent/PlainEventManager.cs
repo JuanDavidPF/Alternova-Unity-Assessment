@@ -4,53 +4,76 @@ using Payosky.Core.Singleton;
 
 namespace Payosky.Core.PlainEvent
 {
-    public sealed class PlainEventManager : PlainSingleton<PlainEventManager>
+    public delegate void EventCallback<T>(T data);
+    public sealed class PlainEventManager
     {
+        private static Dictionary<Type, List<Delegate>> eventDictionary = new();
 
-        private readonly Dictionary<Type, List<Action<PlainEvent>>> eventListeners = new();
 
 
-        public PlainEventManager() { }
 
-        public void RegisterListener<T>(Action<T> listener) where T : PlainEvent
+        public static void AddEventListener<T>(EventCallback<T> listener)
         {
-            Type eventType = typeof(T);
 
-            if (!eventListeners.ContainsKey(eventType))
+            List<Delegate> listeners = null;
+            if (eventDictionary.TryGetValue(typeof(T), out listeners))
             {
-                eventListeners[eventType] = new List<Action<PlainEvent>>();
-            }
-
-            eventListeners[eventType].Add(e => listener((T)e));
-        }
-
-        public void UnregisterListener<T>(Action<T> listener) where T : PlainEvent
-        {
-            Type eventType = typeof(T);
-
-            if (eventListeners.ContainsKey(eventType))
-            {
-                eventListeners[eventType].Remove(e => listener((T)e));
-            }
-        }
-
-        public void TriggerEvent(PlainEvent plainEvent)
-        {
-            Type eventType = plainEvent.GetType();
-
-            if (eventListeners.ContainsKey(eventType))
-            {
-                foreach (var listener in eventListeners[eventType])
+                if (!listeners.Contains(listener))
                 {
-                    listener(plainEvent);
+                    listeners.Add(listener);
+                }
+            }
+            else
+            {
+                listeners = new List<Delegate>();
+                listeners.Add(listener);
+                eventDictionary.Add(typeof(T), listeners);
+            }
+        }
+
+        public static List<Delegate> GetListenersOfEvent<T>()
+        {
+
+            List<Delegate> listeners = null;
+            if (eventDictionary.TryGetValue(typeof(T), out listeners))
+            {
+                return listeners;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public static void RemoveEventListener<T>(EventCallback<T> listener)
+        {
+            List<Delegate> listeners = null;
+            if (eventDictionary.TryGetValue(typeof(T), out listeners))
+            {
+                listeners.Remove(listener);
+            }
+        }
+
+        public static void RemoveEvent<T>()
+        {
+            eventDictionary.Remove(typeof(T));
+        }
+
+        public static void RemoveAllEvents()
+        {
+            eventDictionary = new Dictionary<Type, List<Delegate>>();
+        }
+
+        public static void TriggerEvent<T>(T data)
+        {
+            List<Delegate> listeners = null;
+            if (eventDictionary.TryGetValue(typeof(T), out listeners))
+            {
+                foreach (var listener in listeners.ToArray())
+                {
+                    listener.DynamicInvoke(data);
                 }
             }
         }
-
-        public void ClearAllListeners()
-        {
-            eventListeners.Clear();
-        }
-
-    }//Closes EventManager class
-}//Closes Namespace declaration
+    }
+}

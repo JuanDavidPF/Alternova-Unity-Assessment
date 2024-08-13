@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using Alternova.Runtime.Events;
 using Alternova.Runtime.Tiles;
+using Payosky.Core.PlainEvent;
 using UnityEngine;
 
 namespace Alternova.Runtime
@@ -9,34 +11,38 @@ namespace Alternova.Runtime
     {
 
         [SerializeField] private BoardManager board;
-        [SerializeField] private JsonDataLoader jsonLoader;
+        [SerializeField] private BoardData boardData;
 
-
-        private IEnumerator Start()
+        public void StartBoard()
         {
-            if (board)
+            PlayerState.Instance.Reset();
+
+
+            if (board && boardData)
             {
-                board.InitializeBoard(LoadTileData(jsonLoader));
-                yield return new WaitForSeconds(3f);
-                StartCoroutine(board.CO_RevealCards());
+                board.InitializeBoard(boardData);
+                PlainEventManager.AddEventListener<GameOverEvent>(OnGameOverEvent);
             }
 
-        }//Closes Start method
+        }//Closes StartBoard method
 
 
-        public TileData[] LoadTileData(JsonDataLoader jsonLoader)
+        public void OnGameOverEvent(GameOverEvent e)
         {
-            if (!jsonLoader) return new TileData[0];
+            PlainEventManager.RemoveEventListener<GameOverEvent>(OnGameOverEvent);
+            GameState.Instance.StopClock();
+        }
 
-            TileDataWrapper result = jsonLoader.LoadData<TileDataWrapper>();
+        private void Update()
+        {
+            GameState.Instance.UpdateClock(Time.deltaTime);
 
-            if (result != null) return result.blocks;
-            else return new TileData[0];
+        }//Closes Update method
 
-        }//Closes LoadTileData method
-
-
-
+        private void OnDestroy()
+        {
+            PlainEventManager.RemoveAllEvents();
+        }
 
     }//Closes GameInstance class
 }//Closes Namespace declaration

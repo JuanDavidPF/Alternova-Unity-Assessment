@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd9da6a48a48aea4293b7ac7a3c1182b, type: 3}
+  m_Name: Board_GroupsOfThree
+  m_EditorClassIdentifier: 
+  jsonFile: {fileID: 4900000, guid: 74bd0c29fdf94f548ac9aaaa853330ed, type: 3}
+  initialRevealDuration: 10
+  groupSize: 3
+  pairScore: 200
+  wrongPairScore: -30
+  minValue: 0
+  maxValue: 10
+  minColumns: 1
+  maxColumns: 10
+  minRows: 1
+  maxRows: 10

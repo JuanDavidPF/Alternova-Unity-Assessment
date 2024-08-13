@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Alternova.Runtime.Events;
 using Payosky.Core.PlainEvent;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.UI;
 
 namespace Alternova.Runtime.Tiles
@@ -16,30 +17,17 @@ namespace Alternova.Runtime.Tiles
         [SerializeField] private Transform tileContainer;
         [SerializeField] private Tile tilePrefab;
         [SerializeField] private GridLayoutGroup grildLayout;
-
-        [Space(10)]
-        [Header("Parameters")]
-        [SerializeField] private float initialRevealDuration = 3f;
-
-        [SerializeField]
-        [Range(2, 4)]
-        [Tooltip("What is the amount of cards that need to match")]
-        private int groupSize = 2;
+        [SerializeField] private Image progress;
 
 
-        [Space(10)]
-        [Header("Conditionals")]
-        [SerializeField] int minValue = 0;
-        [SerializeField] int maxValue = 9;
+        private BoardData data;
+        private List<Tile> tiles = new();
+        private List<Tile> tilesRevealed = new();
+        private List<Tile> tilesCleared = new();
 
-        [Space(5)]
-        [SerializeField] int minColumns = 2;
-        [SerializeField] int maxColumns = 8;
 
-        [Space(5)]
-        [SerializeField] int minRows = 2;
-        [SerializeField] int maxRows = 8;
 
+        #region Lifecycle
         private void OnValidate()
         {
             if (!tileContainer) tileContainer = transform;
@@ -48,18 +36,91 @@ namespace Alternova.Runtime.Tiles
 
         }//Closes OnValidate method
 
-        public void InitializeBoard(TileData[] dataArray)
-        {
 
-            if (!IsDataValid(dataArray)) return;
+        #endregion
+
+
+        #region Event Handlers
+
+        private void OnCardRevealed(CardFlippedEvent e)
+        {
+            if (!e.Card) return;
+            PlayerState.Instance.AddClick();
+            tilesRevealed.Add(e.Card);
+
+            if (AreTilesGrouped(tilesRevealed.ToArray()))
+            {
+                if (data.GroupSize == tilesRevealed.Count)
+                {
+                    tilesRevealed.Clear();
+                    PlainEventManager.TriggerEvent(new ClearGroupedTiles());
+                    PlayerState.Instance.AddPair();
+                    PlayerState.Instance.AddScore(data.PairScore);
+                }
+            }
+            else
+            {
+                tilesRevealed.Clear();
+                PlayerState.Instance.AddScore(data.WrongPairScore);
+                PlainEventManager.TriggerEvent(new CoverRevealedTilesEvent());
+            }
+
+        }//Closes OnCardRevealed event
+
+        private void OnCardCleared(CardClearedEvent e)
+        {
+            if (!e.Card) return;
+            if (!tilesCleared.Contains(e.Card)) tilesCleared.Add(e.Card);
+
+            if (tilesCleared.Count == tiles.Count)
+            {
+                PlainEventManager.TriggerEvent(new GameOverEvent());
+            }
+
+        }//Closes OnCardCleared event
+
+        #endregion
+
+
+        public bool AreTilesGrouped(Tile[] tiles)
+        {
+            int matchingNumber = 0;
+            bool isFirstTile = true;
+
+            foreach (var tile in tiles)
+            {
+                if (!tile || tile.Data == null) return false;
+
+                if (!isFirstTile && tile.Data.number != matchingNumber) return false;
+                else if (isFirstTile)
+                {
+                    isFirstTile = false;
+                    matchingNumber = tile.Data.number;
+                }
+            }
+            return true;
+        }//Closes AreTilesGrouped event
+
+
+        public void InitializeBoard(BoardData data)
+        {
+            EmptyBoard();
+            if (!data) return;
+            this.data = data;
+
+            TileData[] dataArray = data.LoadData();
+
+            if (!data.IsDataValid(dataArray)) return;
 
             dataArray = OrganizeTiles(dataArray);
 
-
-            foreach (var data in dataArray)
+            foreach (var tileData in dataArray)
             {
-                CreateTile(data);
+                if (tileData == null) continue;
+                tiles.Add(CreateTile(tileData));
             }
+
+            StartCoroutine(CO_RevealCards());
 
         }//Closes InitializeBoard method
 
@@ -74,28 +135,63 @@ namespace Alternova.Runtime.Tiles
 
         }//Closes CreateTile method
 
-        public void ClearBoard()
+        private void EmptyBoard()
         {
 
-            PlainEventManager.Instance.TriggerEvent(new ClearBoardEvent());
+            tiles.Clear();
+            tilesCleared.Clear();
+            tilesRevealed.Clear();
+            PlainEventManager.RemoveEventListener<CardFlippedEvent>(OnCardRevealed);
+            PlainEventManager.RemoveEventListener<CardClearedEvent>(OnCardCleared);
+            PlainEventManager.TriggerEvent(new EmptyBoardEvent());
 
         }//Closes ClearBoard method
 
 
+
         public IEnumerator CO_RevealCards()
         {
-            yield return CO_RevealCards(initialRevealDuration);
+            yield return new WaitForEndOfFrame();
+            yield return CO_RevealCards(data.InitialRevealDuration);
         }//Closes InitializeBoard Coroutine
 
 
         public IEnumerator CO_RevealCards(float duration)
         {
 
-            PlainEventManager.Instance.TriggerEvent(new RevealCardsEvent());
+            PlainEventManager.TriggerEvent(new RevealCardsEvent());
+
+            StartCoroutine(CO_AnimateProgressBar(duration));
             yield return new WaitForSeconds(duration);
-            PlainEventManager.Instance.TriggerEvent(new CoverBoardEvent());
+
+            GameState.Instance.ResetClock();
+            PlainEventManager.TriggerEvent(new CoverBoardEvent());
+
+
+            PlainEventManager.AddEventListener<CardFlippedEvent>(OnCardRevealed);
+
+            PlainEventManager.AddEventListener<CardClearedEvent>(OnCardCleared);
+
 
         }//Closes InitializeBoard Coroutine
+
+        private IEnumerator CO_AnimateProgressBar(float duration)
+        {
+            if (!progress) yield return null;
+
+            float elapsedTime = 1f;
+
+            while (elapsedTime < duration)
+            {
+                elapsedTime += Time.deltaTime;
+                float fillAmount = Mathf.Lerp(1f, 0f, elapsedTime / duration);
+                progress.fillAmount = fillAmount;
+
+                yield return null; // Wait for the next frame
+            }
+
+            progress.fillAmount = 0f; // Ensure it's fully filled at the end
+        }
 
 
         private TileData[] OrganizeTiles(TileData[] dataArray)
@@ -117,40 +213,6 @@ namespace Alternova.Runtime.Tiles
             grildLayout.constraintCount = highestC;
             return dataArray;
         }//Closes SortTiles method
-
-
-        private bool IsDataValid(TileData[] dataArray)
-        {
-            Dictionary<int, int> groups = new Dictionary<int, int>();
-
-            if (dataArray == null || dataArray.Length == 0) return false;
-
-            foreach (var data in dataArray)
-            {
-                if (!IsDataValid(data)) return false;
-
-                if (!groups.ContainsKey(data.number)) groups.Add(data.number, 1);
-                else groups[data.number] = groups[data.number] + 1;
-
-            }
-
-            //Calculate if every tile has a valid group to be paired with
-            foreach (int group in groups.Values)
-                if (group != groupSize) return false;
-
-            return true;
-        }//Closes IsDataValid method
-
-
-        private bool IsDataValid(TileData data)
-        {
-            if (data == null) return false;
-            if (data.number < minValue || data.number > maxValue) return false;
-            if (data.R + 1 < minRows || data.R + 1 > maxRows) return false;
-            if (data.C + 1 < minColumns || data.C + 1 > maxColumns) return false;
-            return true;
-        }//Closes IsDataValid method
-
 
     }//Closes BoardManager class
 }//Closes Namespace declaration
