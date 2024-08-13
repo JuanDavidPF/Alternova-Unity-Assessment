@@ -1,10 +1,8 @@
 using System.Collections;
 using Alternova.Runtime.Events;
-using CodiceApp;
 using Payosky.Core.PlainEvent;
 using TMPro;
 using UnityEngine;
-using UnityEngine.AI;
 using UnityEngine.UI;
 
 namespace Alternova.Runtime.Tiles
