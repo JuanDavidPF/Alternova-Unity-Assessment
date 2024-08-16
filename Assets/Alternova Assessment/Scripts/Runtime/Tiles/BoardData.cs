@@ -19,6 +19,9 @@ namespace Alternova.Runtime.Tiles
         [Tooltip("What is the amount of cards that need to match")]
         public int groupSize = 2;
 
+        [Tooltip("If TRUE, a tile of the same denomination can ahve multiple groups in the same board")]
+        public bool allowMultiGroup = false;
+
         [Space(10)]
         [Header("Score")]
         [Range(10, 300)]
@@ -83,7 +86,15 @@ namespace Alternova.Runtime.Tiles
 
             //Calculate if every tile has a valid group to be paired with
             foreach (int group in groups.Values)
-                if (group != groupSize) return false;
+            {
+                if (allowMultiGroup)
+                {
+                    if (group < groupSize) return false;
+                    if (group % groupSize != 0) return false;
+                }
+                else if (group != groupSize) return false;
+
+            }
 
             return true;
         }//Closes IsDataValid method

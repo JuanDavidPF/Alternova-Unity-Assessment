@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd9da6a48a48aea4293b7ac7a3c1182b, type: 3}
   m_Name: Board_Assessment
   m_EditorClassIdentifier: 
-  jsonFile: {fileID: 4900000, guid: 0e8409fe88b89c34eac135077c338650, type: 3}
+  jsonFile: {fileID: 4900000, guid: 5854e57b8f1a66044b9ae4698ebb4948, type: 3}
   initialRevealDuration: 7
   groupSize: 2
+  allowMultiGroup: 1
   pairScore: 100
   wrongPairScore: -10
   minValue: 0
